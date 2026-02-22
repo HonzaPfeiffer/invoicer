@@ -10,6 +10,8 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://appuser:apppassword@postgres:5432/appdb?schema=public
+      NEXTAUTH_SECRET: 5XtPKxsm4EfqtaxThRKe5tIHsm4Hf6NR8wQ71GAyXgc=
+      NEXTAUTH_URL: http://localhost:3000
     depends_on:
       - postgres
   postgres:
