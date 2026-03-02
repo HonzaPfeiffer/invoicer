@@ -21,24 +21,32 @@ type InvoiceWithItems = Invoice & {
 };
 
 // Helper to assert type
-function isInvoiceWithItems(invoice: any): invoice is InvoiceWithItems {
-    return invoice && invoice.items && Array.isArray(JSON.parse(invoice.items as string));
+function parseItems(items: any): any[] | null {
+    try {
+        const parsed = typeof items === 'string' ? JSON.parse(items) : items;
+        return Array.isArray(parsed) ? parsed : null;
+    } catch {
+        return null;
+    }
 }
 
-export default async function InvoiceDetailsPage({ params }: { params: { id: string } }) {
+export default async function InvoiceDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect('/login');
   }
 
-  const invoice = await getInvoiceById(params.id);
+  const invoice = await getInvoiceById(id);
 
-  if (!invoice || !isInvoiceWithItems(invoice)) {
+  const parsedItems = invoice ? parseItems(invoice.items) : null;
+
+  if (!invoice || !parsedItems) {
     notFound();
   }
 
-  const items = JSON.parse(invoice.items as string) as { description: string; quantity: number; price: number }[];
+  const items = parsedItems as { description: string; quantity: number; price: number }[];
 
   return (
     <div className="min-h-screen">
@@ -56,8 +64,8 @@ export default async function InvoiceDetailsPage({ params }: { params: { id: str
                 </button>
               </Link>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">Invoice {invoice.invoiceNumber}</h1>
-                <p className="text-gray-400 text-sm sm:text-base">Invoice details and information</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-black mb-1">Invoice {invoice.invoiceNumber}</h1>
+                <p className="text-gray-500 text-sm sm:text-base">Invoice details and information</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -66,7 +74,7 @@ export default async function InvoiceDetailsPage({ params }: { params: { id: str
                   ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                   : invoice.status === 'SENT'
                   ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                  : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                  : 'bg-gray-500/20 text-gray-500 border border-gray-500/30'
               }`}>
                 {invoice.status}
               </span>
@@ -82,15 +90,15 @@ export default async function InvoiceDetailsPage({ params }: { params: { id: str
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <UserIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-white">Billed To</h2>
+                  <h2 className="text-lg font-semibold text-black">Billed To</h2>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-white font-medium">{invoice.clientName}</p>
-                  <div className="flex items-start space-x-2 text-gray-400 text-sm">
+                  <p className="text-black font-medium">{invoice.clientName}</p>
+                  <div className="flex items-start space-x-2 text-gray-500 text-sm">
                     <MapPinIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <span>{invoice.clientAddress}</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-gray-400 text-sm">
+                  <div className="flex items-center space-x-2 text-gray-500 text-sm">
                     <EnvelopeIcon className="w-4 h-4 flex-shrink-0" />
                     <span>{invoice.clientEmail}</span>
                   </div>
@@ -101,20 +109,20 @@ export default async function InvoiceDetailsPage({ params }: { params: { id: str
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <CalendarIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-white">Invoice Details</h2>
+                  <h2 className="text-lg font-semibold text-black">Invoice Details</h2>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-400 text-sm">Issue Date:</span>
-                    <span className="text-white text-sm">{new Date(invoice.issueDate).toLocaleDateString()}</span>
+                    <span className="text-gray-500 text-sm">Issue Date:</span>
+                    <span className="text-black text-sm">{new Date(invoice.issueDate).toLocaleDateString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400 text-sm">Due Date:</span>
-                    <span className="text-white text-sm">{new Date(invoice.dueDate).toLocaleDateString()}</span>
+                    <span className="text-gray-500 text-sm">Due Date:</span>
+                    <span className="text-black text-sm">{new Date(invoice.dueDate).toLocaleDateString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400 text-sm">Total Amount:</span>
-                    <span className="text-white font-medium text-sm">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(invoice.totalAmount)}</span>
+                    <span className="text-gray-500 text-sm">Total Amount:</span>
+                    <span className="text-black font-medium text-sm">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(invoice.totalAmount)}</span>
                   </div>
                 </div>
               </div>
@@ -125,25 +133,25 @@ export default async function InvoiceDetailsPage({ params }: { params: { id: str
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-700">
-                    <th className="text-left p-3 sm:p-4 text-gray-400 font-medium text-sm">Description</th>
-                    <th className="text-right p-3 sm:p-4 text-gray-400 font-medium text-sm">Quantity</th>
-                    <th className="text-right p-3 sm:p-4 text-gray-400 font-medium text-sm">Price</th>
-                    <th className="text-right p-3 sm:p-4 text-gray-400 font-medium text-sm">Total</th>
+                    <th className="text-left p-3 sm:p-4 text-gray-500 font-medium text-sm">Description</th>
+                    <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">Quantity</th>
+                    <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">Price</th>
+                    <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {items.map((item, index) => (
                     <tr key={index} className="border-b border-gray-800">
-                      <td className="p-3 sm:p-4 text-gray-300 text-sm">{item.description}</td>
-                      <td className="p-3 sm:p-4 text-gray-300 text-sm text-right">{item.quantity}</td>
-                      <td className="p-3 sm:p-4 text-gray-300 text-sm text-right">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.price)}</td>
-                      <td className="p-3 sm:p-4 text-white font-medium text-sm text-right">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.quantity * item.price)}</td>
+                      <td className="p-3 sm:p-4 text-gray-500 text-sm">{item.description}</td>
+                      <td className="p-3 sm:p-4 text-gray-500 text-sm text-right">{item.quantity}</td>
+                      <td className="p-3 sm:p-4 text-gray-500 text-sm text-right">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.price)}</td>
+                      <td className="p-3 sm:p-4 text-black font-medium text-sm text-right">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.quantity * item.price)}</td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan={3} className="text-right font-bold p-3 sm:p-4 text-white text-sm">Grand Total</td>
+                    <td colSpan={3} className="text-right font-bold p-3 sm:p-4 text-black text-sm">Grand Total</td>
                     <td className="text-right font-bold p-3 sm:p-4 text-lg text-purple-400">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(invoice.totalAmount)}</td>
                   </tr>
                 </tfoot>
