@@ -111,7 +111,7 @@ export default function NewInvoice() {
                 </button>
               </Link>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">Create New Invoice</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-black mb-1">Create New Invoice</h1>
                 <p className="text-gray-400 text-sm sm:text-base">Fill in the details to create a new invoice</p>
               </div>
             </div>
@@ -124,41 +124,41 @@ export default function NewInvoice() {
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <UserIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-white">Client Information</h2>
+                  <h2 className="text-lg font-semibold text-black">Client Information</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-300 mb-2 block">Client Name</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">Client Name</label>
                     <input
                       type="text"
                       placeholder="Enter client name"
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
                       required
-                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-300 mb-2 block">Client Email</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">Client Email</label>
                     <input
                       type="email"
                       placeholder="Enter client email"
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
                       required
-                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
                     />
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="text-sm font-medium text-gray-300 mb-2 block">Client Address</label>
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">Client Address</label>
                   <textarea
                     placeholder="Enter client address"
                     value={clientAddress}
                     onChange={(e) => setClientAddress(e.target.value)}
                     required
                     rows={3}
-                    className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all resize-none"
+                    className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all resize-none"
                   />
                 </div>
               </div>
@@ -167,27 +167,27 @@ export default function NewInvoice() {
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <CalendarIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-white">Invoice Dates</h2>
+                  <h2 className="text-lg font-semibold text-black">Invoice Dates</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-300 mb-2 block">Issue Date</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">Issue Date</label>
                     <input
                       type="date"
                       value={issueDate}
                       onChange={(e) => setIssueDate(e.target.value)}
                       required
-                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-300 mb-2 block">Due Date</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">Due Date</label>
                     <input
                       type="date"
                       value={dueDate}
                       onChange={(e) => setDueDate(e.target.value)}
                       required
-                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
                     />
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export default function NewInvoice() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
                     <DocumentTextIcon className="w-5 h-5 text-purple-400" />
-                    <h2 className="text-lg font-semibold text-white">Invoice Items</h2>
+                    <h2 className="text-lg font-semibold text-black">Invoice Items</h2>
                   </div>
                   <button
                     type="button"
@@ -220,7 +220,7 @@ export default function NewInvoice() {
                           value={item.description}
                           onChange={(e) => handleItemChange(index, 'description', e.target.value)}
                           required
-                          className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm"
+                          className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm"
                         />
                       </div>
                       <div className="w-16 sm:w-20">
@@ -231,7 +231,7 @@ export default function NewInvoice() {
                           onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
                           min="1"
                           required
-                          className="w-full bg-white/5 border border-gray-600 rounded-lg px-3 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm text-center"
+                          className="w-full bg-white/5 border border-gray-600 rounded-lg px-3 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm text-center"
                         />
                       </div>
                       <div className="w-24 sm:w-32">
@@ -243,7 +243,7 @@ export default function NewInvoice() {
                           min="0"
                           step="0.01"
                           required
-                          className="w-full bg-white/5 border border-gray-600 rounded-lg px-3 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm text-center"
+                          className="w-full bg-white/5 border border-gray-600 rounded-lg px-3 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm text-center"
                         />
                       </div>
                       <button
