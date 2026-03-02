@@ -21,24 +21,32 @@ type InvoiceWithItems = Invoice & {
 };
 
 // Helper to assert type
-function isInvoiceWithItems(invoice: any): invoice is InvoiceWithItems {
-    return invoice && invoice.items && Array.isArray(JSON.parse(invoice.items as string));
+function parseItems(items: any): any[] | null {
+    try {
+        const parsed = typeof items === 'string' ? JSON.parse(items) : items;
+        return Array.isArray(parsed) ? parsed : null;
+    } catch {
+        return null;
+    }
 }
 
-export default async function InvoiceDetailsPage({ params }: { params: { id: string } }) {
+export default async function InvoiceDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect('/login');
   }
 
-  const invoice = await getInvoiceById(params.id);
+  const invoice = await getInvoiceById(id);
 
-  if (!invoice || !isInvoiceWithItems(invoice)) {
+  const parsedItems = invoice ? parseItems(invoice.items) : null;
+
+  if (!invoice || !parsedItems) {
     notFound();
   }
 
-  const items = JSON.parse(invoice.items as string) as { description: string; quantity: number; price: number }[];
+  const items = parsedItems as { description: string; quantity: number; price: number }[];
 
   return (
     <div className="min-h-screen">

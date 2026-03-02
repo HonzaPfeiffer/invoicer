@@ -72,7 +72,8 @@ interface InvoicePDFProps {
 }
 
 const InvoicePDF = ({ invoice }: InvoicePDFProps) => {
-    const items = JSON.parse(invoice.items as string) as { description: string; quantity: number; price: number }[];
+    const raw = typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items;
+    const items = raw as { description: string; quantity: number; price: number }[];
     return (
         <Document>
         <Page size="A4" style={styles.page}>
