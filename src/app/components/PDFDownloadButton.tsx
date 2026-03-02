@@ -19,7 +19,7 @@ const PDFDownloadButton = ({ invoice }: PDFDownloadButtonProps) => {
 
   if (!isClient) {
     return (
-        <button disabled className="px-6 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed">
+        <button disabled className="bg-gray-400 text-white px-4 py-2 rounded-md cursor-not-allowed">
             Loading...
         </button>
     );
@@ -31,7 +31,7 @@ const PDFDownloadButton = ({ invoice }: PDFDownloadButtonProps) => {
       fileName={`invoice-${invoice.invoiceNumber}.pdf`}
     >
       {({ loading }) => (
-        <button disabled={loading} className={`px-6 py-2 text-white rounded-md ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}>
+        <button disabled={loading} className={`px-4 py-2 text-white rounded-md transition-colors ${loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
           {loading ? 'Generating PDF...' : 'Download PDF'}
         </button>
       )}
