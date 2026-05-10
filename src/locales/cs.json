@@ -1,0 +1,97 @@
+{
+  "nav": {
+    "dashboard": "Přehled",
+    "invoices": "Faktury",
+    "settings": "Nastavení",
+    "logout": "Odhlásit se"
+  },
+  "common": {
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "back": "Zpět",
+    "loading": "Načítání..."
+  },
+  "invoices": {
+    "title": "Faktury",
+    "subtitle": "Spravujte a sledujte všechny své faktury",
+    "create": "Vytvořit fakturu",
+    "createFirst": "Vytvořit první fakturu",
+    "noInvoices": "Zatím žádné faktury",
+    "noInvoicesDesc": "Vytvořte svou první fakturu",
+    "invoice": "Faktura",
+    "client": "Klient",
+    "amount": "Částka",
+    "status": "Stav",
+    "date": "Datum",
+    "details": "Detaily a informace o faktuře",
+    "downloadPdf": "Stáhnout PDF",
+    "generatingPdf": "Generování PDF..."
+  },
+  "invoice": {
+    "billedTo": "Fakturováno pro",
+    "invoiceDetails": "Detaily faktury",
+    "issueDate": "Datum vystavení:",
+    "dueDate": "Datum splatnosti:",
+    "total": "Celkem:",
+    "totalAmount": "Celková částka:",
+    "description": "Popis",
+    "quantity": "Množství",
+    "qty": "Množ.",
+    "price": "Cena",
+    "grandTotal": "Celkem"
+  },
+  "newInvoice": {
+    "title": "Vytvořit novou fakturu",
+    "subtitle": "Vyplňte údaje níže",
+    "clientInfo": "Informace o klientovi",
+    "clientName": "Jméno klienta",
+    "clientNamePlaceholder": "Zadejte jméno klienta",
+    "clientAddress": "Adresa klienta",
+    "clientAddressPlaceholder": "Zadejte adresu klienta",
+    "clientEmail": "Email klienta",
+    "clientEmailPlaceholder": "klient@priklad.cz",
+    "invoiceDates": "Data faktury",
+    "invoiceItems": "Položky faktury",
+    "addItem": "Přidat položku",
+    "itemDescription": "Popis",
+    "itemDescriptionPlaceholder": "Popis položky",
+    "createInvoice": "Vytvořit fakturu",
+    "creating": "Vytváření..."
+  },
+  "settings": {
+    "title": "Nastavení",
+    "subtitle": "Spravujte předvolby aplikace",
+    "language": "Jazyk",
+    "languageDesc": "Vyberte preferovaný jazyk",
+    "currency": "Měna",
+    "currencyDesc": "Vyberte výchozí měnu pro faktury",
+    "saveChanges": "Uložit změny",
+    "changesSaved": "Nastavení úspěšně uloženo"
+  },
+  "status": {
+    "PAID": "ZAPLACENO",
+    "SENT": "ODESLÁNO",
+    "DRAFT": "KONCEPT"
+  },
+  "dashboard": {
+    "title": "Přehled",
+    "totalInvoices": "Celkem faktur",
+    "paidInvoices": "Zaplacené faktury",
+    "pendingInvoices": "Čekající faktury",
+    "totalRevenue": "Celkové příjmy"
+  },
+  "pdf": {
+    "invoice": "FAKTURA",
+    "billedTo": "Fakturováno pro",
+    "invoiceDetails": "Detaily faktury",
+    "issueDate": "Datum vystavení:",
+    "dueDate": "Datum splatnosti:",
+    "total": "Celkem:",
+    "description": "Popis",
+    "qty": "Množ.",
+    "price": "Cena",
+    "grandTotal": "Celkem"
+  }
+}

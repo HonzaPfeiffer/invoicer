@@ -1,5 +1,7 @@
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { Invoice } from '@prisma/client';
+import enTranslations from '@/locales/en.json';
+import csTranslations from '@/locales/cs.json';
 
 const colors = {
   black: '#000000',
@@ -156,13 +158,38 @@ function getStatusStyle(status: string) {
 
 interface InvoicePDFProps {
   invoice: Invoice;
+  currency: 'USD' | 'EUR' | 'CZK';
+  language: 'en' | 'cs';
 }
 
-const InvoicePDF = ({ invoice }: InvoicePDFProps) => {
+const InvoicePDF = ({ invoice, currency, language }: InvoicePDFProps) => {
     const raw = typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items;
     const items = raw as { description: string; quantity: number; price: number }[];
-    const fmt = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    const fmt = (n: number) => new Intl.NumberFormat(language === 'cs' ? 'cs-CZ' : 'en-US', { 
+      style: 'currency', 
+      currency: currency 
+    }).format(n);
     const statusStyle = getStatusStyle(invoice.status);
+    
+    const translations: Record<string, any> = {
+      en: enTranslations,
+      cs: csTranslations,
+    };
+    
+    const t = (key: string) => {
+      const keys = key.split('.');
+      let value: any = translations[language];
+      
+      for (const k of keys) {
+        if (value && typeof value === 'object' && k in value) {
+          value = value[k];
+        } else {
+          return key;
+        }
+      }
+      
+      return typeof value === 'string' ? value : key;
+    };
 
     return (
         <Document>
@@ -170,34 +197,34 @@ const InvoicePDF = ({ invoice }: InvoicePDFProps) => {
             {/* Header */}
             <View style={styles.headerRow}>
                 <View>
-                    <Text style={styles.title}>INVOICE</Text>
+                    <Text style={styles.title}>{t('pdf.invoice')}</Text>
                     <Text style={styles.invoiceNumber}>{invoice.invoiceNumber}</Text>
                 </View>
                 <View style={{...styles.statusBadge, backgroundColor: statusStyle.backgroundColor, color: statusStyle.color}}>
-                    <Text>{invoice.status}</Text>
+                    <Text>{t(`status.${invoice.status}`)}</Text>
                 </View>
             </View>
 
             {/* Two-column info: Billed To + Invoice Details */}
             <View style={styles.infoRow}>
                 <View style={styles.infoCol}>
-                    <Text style={styles.sectionLabel}>Billed To</Text>
+                    <Text style={styles.sectionLabel}>{t('pdf.billedTo').toUpperCase()}</Text>
                     <Text style={styles.infoName}>{invoice.clientName}</Text>
                     <Text style={styles.infoText}>{invoice.clientAddress}</Text>
                     <Text style={styles.infoText}>{invoice.clientEmail}</Text>
                 </View>
                 <View style={styles.infoCol}>
-                    <Text style={styles.sectionLabel}>Invoice Details</Text>
+                    <Text style={styles.sectionLabel}>{t('pdf.invoiceDetails').toUpperCase()}</Text>
                     <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>Issue Date:</Text>
-                        <Text style={styles.detailValue}>{new Date(invoice.issueDate).toLocaleDateString()}</Text>
+                        <Text style={styles.detailLabel}>{t('pdf.issueDate')}</Text>
+                        <Text style={styles.detailValue}>{new Date(invoice.issueDate).toLocaleDateString(language === 'cs' ? 'cs-CZ' : 'en-US')}</Text>
                     </View>
                     <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>Due Date:</Text>
-                        <Text style={styles.detailValue}>{new Date(invoice.dueDate).toLocaleDateString()}</Text>
+                        <Text style={styles.detailLabel}>{t('pdf.dueDate')}</Text>
+                        <Text style={styles.detailValue}>{new Date(invoice.dueDate).toLocaleDateString(language === 'cs' ? 'cs-CZ' : 'en-US')}</Text>
                     </View>
                     <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>Total:</Text>
+                        <Text style={styles.detailLabel}>{t('pdf.total')}</Text>
                         <Text style={{...styles.detailValue, fontWeight: 'bold'}}>{fmt(invoice.totalAmount)}</Text>
                     </View>
                 </View>
@@ -207,10 +234,10 @@ const InvoicePDF = ({ invoice }: InvoicePDFProps) => {
 
             {/* Table Header */}
             <View style={styles.tableHeader}>
-                <View style={styles.colDesc}><Text style={styles.thText}>Description</Text></View>
-                <View style={styles.colQty}><Text style={{...styles.thText, textAlign: 'right'}}>Qty</Text></View>
-                <View style={styles.colPrice}><Text style={{...styles.thText, textAlign: 'right'}}>Price</Text></View>
-                <View style={styles.colTotal}><Text style={{...styles.thText, textAlign: 'right'}}>Total</Text></View>
+                <View style={styles.colDesc}><Text style={styles.thText}>{t('pdf.description')}</Text></View>
+                <View style={styles.colQty}><Text style={{...styles.thText, textAlign: 'right'}}>{t('pdf.qty')}</Text></View>
+                <View style={styles.colPrice}><Text style={{...styles.thText, textAlign: 'right'}}>{t('pdf.price')}</Text></View>
+                <View style={styles.colTotal}><Text style={{...styles.thText, textAlign: 'right'}}>{t('pdf.total')}</Text></View>
             </View>
 
             {/* Table Rows */}
@@ -225,7 +252,7 @@ const InvoicePDF = ({ invoice }: InvoicePDFProps) => {
 
             {/* Grand Total */}
             <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>Grand Total</Text>
+                <Text style={styles.totalLabel}>{t('pdf.grandTotal')}</Text>
                 <Text style={styles.totalValue}>{fmt(invoice.totalAmount)}</Text>
             </View>
         </Page>

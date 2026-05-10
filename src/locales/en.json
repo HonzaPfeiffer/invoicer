@@ -1,0 +1,97 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "invoices": "Invoices",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "loading": "Loading..."
+  },
+  "invoices": {
+    "title": "Invoices",
+    "subtitle": "Manage and track all your invoices",
+    "create": "Create Invoice",
+    "createFirst": "Create Your First Invoice",
+    "noInvoices": "No invoices yet",
+    "noInvoicesDesc": "Create your first invoice to get started",
+    "invoice": "Invoice",
+    "client": "Client",
+    "amount": "Amount",
+    "status": "Status",
+    "date": "Date",
+    "details": "Invoice details and information",
+    "downloadPdf": "Download PDF",
+    "generatingPdf": "Generating PDF..."
+  },
+  "invoice": {
+    "billedTo": "Billed To",
+    "invoiceDetails": "Invoice Details",
+    "issueDate": "Issue Date:",
+    "dueDate": "Due Date:",
+    "total": "Total:",
+    "totalAmount": "Total Amount:",
+    "description": "Description",
+    "quantity": "Quantity",
+    "qty": "Qty",
+    "price": "Price",
+    "grandTotal": "Grand Total"
+  },
+  "newInvoice": {
+    "title": "Create New Invoice",
+    "subtitle": "Fill in the details below",
+    "clientInfo": "Client Information",
+    "clientName": "Client Name",
+    "clientNamePlaceholder": "Enter client name",
+    "clientAddress": "Client Address",
+    "clientAddressPlaceholder": "Enter client address",
+    "clientEmail": "Client Email",
+    "clientEmailPlaceholder": "client@example.com",
+    "invoiceDates": "Invoice Dates",
+    "invoiceItems": "Invoice Items",
+    "addItem": "Add Item",
+    "itemDescription": "Description",
+    "itemDescriptionPlaceholder": "Item description",
+    "createInvoice": "Create Invoice",
+    "creating": "Creating..."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your application preferences",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language",
+    "currency": "Currency",
+    "currencyDesc": "Select default currency for invoices",
+    "saveChanges": "Save Changes",
+    "changesSaved": "Settings saved successfully"
+  },
+  "status": {
+    "PAID": "PAID",
+    "SENT": "SENT",
+    "DRAFT": "DRAFT"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalInvoices": "Total Invoices",
+    "paidInvoices": "Paid Invoices",
+    "pendingInvoices": "Pending Invoices",
+    "totalRevenue": "Total Revenue"
+  },
+  "pdf": {
+    "invoice": "INVOICE",
+    "billedTo": "Billed To",
+    "invoiceDetails": "Invoice Details",
+    "issueDate": "Issue Date:",
+    "dueDate": "Due Date:",
+    "total": "Total:",
+    "description": "Description",
+    "qty": "Qty",
+    "price": "Price",
+    "grandTotal": "Grand Total"
+  }
+}
