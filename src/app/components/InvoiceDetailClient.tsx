@@ -5,6 +5,8 @@ import { Invoice } from '@prisma/client';
 import PDFDownloadButton from './PDFDownloadButton';
 import { useSettings } from '@/contexts/SettingsContext';
 import ClientOnly from './ClientOnly';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   ArrowLeftIcon,
   CalendarIcon,
@@ -20,6 +22,36 @@ interface InvoiceDetailClientProps {
 
 function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
   const { t, language } = useSettings();
+  const router = useRouter();
+  const [currentStatus, setCurrentStatus] = useState(invoice.status);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (newStatus === currentStatus) return;
+    
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/invoices/${invoice.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+
+      setCurrentStatus(newStatus);
+      router.refresh();
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert(t('status.statusUpdateFailed'));
+    } finally {
+      setIsUpdating(false);
+    }
+  };
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(language === 'cs' ? 'cs-CZ' : 'en-US', {
@@ -44,15 +76,22 @@ function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${
-            invoice.status === 'PAID' 
-              ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-              : invoice.status === 'SENT'
-              ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-              : 'bg-gray-500/20 text-gray-500 border border-gray-500/30'
-          }`}>
-            {t(`status.${invoice.status}`)}
-          </span>
+          <select
+            value={currentStatus}
+            onChange={(e) => handleStatusChange(e.target.value)}
+            disabled={isUpdating}
+            className={`px-3 py-1 text-xs sm:text-sm font-medium rounded-full border cursor-pointer transition-all ${
+              currentStatus === 'PAID' 
+                ? 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30' 
+                : currentStatus === 'SENT'
+                ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30'
+                : 'bg-gray-500/20 text-gray-500 border-gray-500/30 hover:bg-gray-500/30'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            <option value="DRAFT">{t('status.DRAFT')}</option>
+            <option value="SENT">{t('status.SENT')}</option>
+            <option value="PAID">{t('status.PAID')}</option>
+          </select>
           <PDFDownloadButton invoice={invoice} />
         </div>
       </div>

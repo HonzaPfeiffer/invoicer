@@ -68,12 +68,19 @@
     "currency": "Currency",
     "currencyDesc": "Select default currency for invoices",
     "saveChanges": "Save Changes",
-    "changesSaved": "Settings saved successfully"
+    "changesSaved": "Settings saved successfully",
+    "account": "Account",
+    "accountDesc": "Manage your account settings",
+    "logout": "Log Out",
+    "logoutDesc": "Sign out of your account"
   },
   "status": {
     "PAID": "PAID",
     "SENT": "SENT",
-    "DRAFT": "DRAFT"
+    "DRAFT": "DRAFT",
+    "changeStatus": "Change Status",
+    "statusUpdated": "Status updated successfully",
+    "statusUpdateFailed": "Failed to update status"
   },
   "dashboard": {
     "title": "Dashboard",

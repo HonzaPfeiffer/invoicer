@@ -68,12 +68,19 @@
     "currency": "Měna",
     "currencyDesc": "Vyberte výchozí měnu pro faktury",
     "saveChanges": "Uložit změny",
-    "changesSaved": "Nastavení úspěšně uloženo"
+    "changesSaved": "Nastavení úspěšně uloženo",
+    "account": "Účet",
+    "accountDesc": "Spravujte nastavení účtu",
+    "logout": "Odhlásit se",
+    "logoutDesc": "Odhlásit se z účtu"
   },
   "status": {
     "PAID": "ZAPLACENO",
     "SENT": "ODESLÁNO",
-    "DRAFT": "KONCEPT"
+    "DRAFT": "KONCEPT",
+    "changeStatus": "Změnit stav",
+    "statusUpdated": "Stav úspěšně aktualizován",
+    "statusUpdateFailed": "Nepodařilo se aktualizovat stav"
   },
   "dashboard": {
     "title": "Přehled",

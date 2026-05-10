@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import ClientOnly from '../components/ClientOnly';
 import { currencies } from '@/lib/currencies';
+import LogoutButton from '../components/LogoutButton';
 
 function SettingsContent({ session }: { session: any }) {
   const { language, currency, setLanguage, setCurrency, t } = useSettings();
@@ -133,6 +134,23 @@ function SettingsContent({ session }: { session: any }) {
                     </div>
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* Account Settings */}
+            <div className="p-6">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">{t('settings.account')}</h2>
+                <p className="text-sm text-gray-500 mt-1">{t('settings.accountDesc')}</p>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-900 mb-1">{session?.user?.name}</p>
+                  <p className="text-xs text-gray-500">{session?.user?.email}</p>
+                </div>
+                
+                <LogoutButton />
               </div>
             </div>
           </div>
