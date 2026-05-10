@@ -3,9 +3,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import enTranslations from '@/locales/en.json';
 import csTranslations from '@/locales/cs.json';
+import { currencies, getCurrencyCodes } from '@/lib/currencies';
+import type { CurrencyCode } from '@/types/currency';
 
 export type Language = 'en' | 'cs';
-export type Currency = 'USD' | 'EUR' | 'CZK';
+export type Currency = CurrencyCode;
 
 interface SettingsContextType {
   language: Language;

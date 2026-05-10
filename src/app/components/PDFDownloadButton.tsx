@@ -12,7 +12,7 @@ interface PDFDownloadButtonProps {
 
 const PDFDownloadButton = ({ invoice }: PDFDownloadButtonProps) => {
   const [isClient, setIsClient] = useState(false);
-  const { t, currency, language } = useSettings();
+  const { t, language } = useSettings();
   
   useEffect(() => {
     setIsClient(true);
@@ -28,7 +28,7 @@ const PDFDownloadButton = ({ invoice }: PDFDownloadButtonProps) => {
 
   return (
     <PDFDownloadLink
-      document={<InvoicePDF invoice={invoice} currency={currency} language={language} />}
+      document={<InvoicePDF invoice={invoice} currency={invoice.currency || 'USD'} language={language} />}
       fileName={`invoice-${invoice.invoiceNumber}.pdf`}
     >
       {({ loading }) => (

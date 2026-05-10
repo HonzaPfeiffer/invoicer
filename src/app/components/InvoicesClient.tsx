@@ -10,7 +10,7 @@ interface InvoicesClientProps {
 }
 
 function InvoicesContent({ invoices }: InvoicesClientProps) {
-  const { t, formatCurrency } = useSettings();
+  const { t, language } = useSettings();
 
   return (
     <>
@@ -49,7 +49,10 @@ function InvoicesContent({ invoices }: InvoicesClientProps) {
                     </td>
                     <td className="px-6 py-4 text-gray-900">{invoice.clientName}</td>
                     <td className="px-6 py-4 text-gray-900 font-medium">
-                      {formatCurrency(invoice.totalAmount)}
+                      {new Intl.NumberFormat(language === 'cs' ? 'cs-CZ' : 'en-US', {
+                        style: 'currency',
+                        currency: invoice.currency || 'USD'
+                      }).format(invoice.totalAmount)}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${

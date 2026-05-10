@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { clientName, clientAddress, clientEmail, issueDate, dueDate, items, totalAmount, status } = body;
+        const { clientName, clientAddress, clientEmail, issueDate, dueDate, items, totalAmount, currency, status } = body;
 
         // Basic validation
         if (!clientName || !issueDate || !dueDate || !items || !totalAmount) {
@@ -53,6 +53,7 @@ export async function POST(request: Request) {
                 dueDate: new Date(dueDate),
                 items,
                 totalAmount,
+                currency: currency || 'USD',
                 status,
                 ownerId: session.user.id,
                 // A simple way to generate a somewhat unique invoice number

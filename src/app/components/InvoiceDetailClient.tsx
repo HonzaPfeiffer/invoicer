@@ -19,7 +19,14 @@ interface InvoiceDetailClientProps {
 }
 
 function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
-  const { t, formatCurrency } = useSettings();
+  const { t, language } = useSettings();
+  
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat(language === 'cs' ? 'cs-CZ' : 'en-US', {
+      style: 'currency',
+      currency: invoice.currency || 'USD'
+    }).format(amount);
+  };
 
   return (
     <>

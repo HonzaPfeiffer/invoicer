@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import Navigation from '@/app/components/Navigation';
+import { useSettings } from '@/contexts/SettingsContext';
+import { useSession } from 'next-auth/react';
+import ClientOnly from '@/app/components/ClientOnly';
+import { currencies } from '@/lib/currencies';
 import { 
   PlusIcon,
   TrashIcon,
@@ -24,13 +26,15 @@ interface Item {
   price: number;
 }
 
-export default function NewInvoice() {
+function NewInvoiceContent({ session }: { session: any }) {
   const router = useRouter();
+  const { currency: defaultCurrency } = useSettings();
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientAddress, setClientAddress] = useState('');
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
+  const [currency, setCurrency] = useState<'USD' | 'EUR' | 'CZK'>(defaultCurrency);
   const [items, setItems] = useState<Item[]>([{ description: '', quantity: 1, price: 0 }]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -78,6 +82,7 @@ export default function NewInvoice() {
           dueDate,
           items,
           totalAmount,
+          currency,
           status: 'DRAFT',
         }),
       });
@@ -163,13 +168,13 @@ export default function NewInvoice() {
                 </div>
               </div>
 
-              {/* Invoice Dates */}
+              {/* Invoice Dates & Currency */}
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <CalendarIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-black">Invoice Dates</h2>
+                  <h2 className="text-lg font-semibold text-black">Invoice Details</h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500 mb-2 block">Issue Date</label>
                     <input
@@ -189,6 +194,20 @@ export default function NewInvoice() {
                       required
                       className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
                     />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">Currency</label>
+                    <select
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value as any)}
+                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                    >
+                      {currencies.map((curr) => (
+                        <option key={curr.code} value={curr.code}>
+                          {curr.code} - {curr.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
@@ -265,7 +284,7 @@ export default function NewInvoice() {
                   <div>
                     <p className="text-gray-400 text-sm">Total Amount</p>
                     <p className="text-2xl sm:text-3xl font-bold text-purple-400">
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(calculateTotal())}
+                      {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(calculateTotal())}
                     </p>
                   </div>
                   <button
@@ -296,5 +315,27 @@ export default function NewInvoice() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewInvoice() {
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return (
+    <ClientOnly>
+      <NewInvoiceContent session={session} />
+    </ClientOnly>
   );
 }

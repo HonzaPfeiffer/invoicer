@@ -6,6 +6,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import ClientOnly from '../components/ClientOnly';
+import { currencies } from '@/lib/currencies';
 
 function SettingsContent({ session }: { session: any }) {
   const { language, currency, setLanguage, setCurrency, t } = useSettings();
@@ -104,83 +105,34 @@ function SettingsContent({ session }: { session: any }) {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <button
-                  onClick={() => {
-                    setCurrency('USD');
-                    handleSave();
-                  }}
-                  className={`p-4 border-2 rounded-lg transition-all ${
-                    currency === 'USD'
-                      ? 'border-indigo-600 bg-indigo-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
-                      <div className="font-medium text-gray-900">USD</div>
-                      <div className="text-sm text-gray-500">US Dollar</div>
-                    </div>
-                    {currency === 'USD' && (
-                      <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                {currencies.map((curr) => (
+                  <button
+                    key={curr.code}
+                    onClick={() => {
+                      setCurrency(curr.code as any);
+                      handleSave();
+                    }}
+                    className={`p-4 border-2 rounded-lg transition-all ${
+                      currency === curr.code
+                        ? 'border-indigo-600 bg-indigo-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="text-left">
+                        <div className="font-medium text-gray-900">{curr.code}</div>
+                        <div className="text-sm text-gray-500">{curr.name}</div>
                       </div>
-                    )}
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setCurrency('EUR');
-                    handleSave();
-                  }}
-                  className={`p-4 border-2 rounded-lg transition-all ${
-                    currency === 'EUR'
-                      ? 'border-indigo-600 bg-indigo-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
-                      <div className="font-medium text-gray-900">EUR</div>
-                      <div className="text-sm text-gray-500">Euro</div>
+                      {currency === curr.code && (
+                        <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
                     </div>
-                    {currency === 'EUR' && (
-                      <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setCurrency('CZK');
-                    handleSave();
-                  }}
-                  className={`p-4 border-2 rounded-lg transition-all ${
-                    currency === 'CZK'
-                      ? 'border-indigo-600 bg-indigo-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
-                      <div className="font-medium text-gray-900">CZK</div>
-                      <div className="text-sm text-gray-500">Czech Koruna</div>
-                    </div>
-                    {currency === 'CZK' && (
-                      <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                </button>
+                  </button>
+                ))}
               </div>
             </div>
           </div>

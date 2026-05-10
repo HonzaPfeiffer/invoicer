@@ -30,6 +30,7 @@ model Invoice {
   dueDate       DateTime
   items         Json
   totalAmount   Float
+  currency      String   @default("USD") // USD, EUR, CZK
   status        String   @default("DRAFT") // e.g., DRAFT, SENT, PAID
   owner         User     @relation(fields: [ownerId], references: [id])
   ownerId       String
