@@ -98,9 +98,36 @@ function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
 
       {/* Invoice Content */}
       <div className="glass-card p-6 sm:p-8 fade-in" style={{ animationDelay: '100ms' }}>
-        {/* Client and Details */}
+        {/* Sender and Recipient */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
-          {/* Billed To */}
+          {/* Sender (From) */}
+          {(invoice.senderName || invoice.senderAddress || invoice.senderIco) && (
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <UserIcon className="w-5 h-5 text-purple-400" />
+                <h2 className="text-lg font-semibold text-black">{t('company.sender')}</h2>
+              </div>
+              <div className="space-y-2">
+                {invoice.senderName && (
+                  <p className="text-black font-medium">{invoice.senderName}</p>
+                )}
+                {invoice.senderAddress && (
+                  <div className="flex items-start space-x-2 text-gray-500 text-sm">
+                    <MapPinIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>{invoice.senderAddress}</span>
+                  </div>
+                )}
+                {invoice.senderIco && (
+                  <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                    <span className="font-medium">{t('company.ico')}:</span>
+                    <span>{invoice.senderIco}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Billed To (Recipient) */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <UserIcon className="w-5 h-5 text-purple-400" />
@@ -116,28 +143,34 @@ function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
                 <EnvelopeIcon className="w-4 h-4 flex-shrink-0" />
                 <span>{invoice.clientEmail}</span>
               </div>
+              {invoice.clientIco && (
+                <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                  <span className="font-medium">{t('company.ico')}:</span>
+                  <span>{invoice.clientIco}</span>
+                </div>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Invoice Details */}
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <CalendarIcon className="w-5 h-5 text-purple-400" />
-              <h2 className="text-lg font-semibold text-black">{t('invoice.invoiceDetails')}</h2>
+        {/* Invoice Details */}
+        <div className="mb-8 pb-6 border-b border-gray-700">
+          <div className="flex items-center space-x-2 mb-4">
+            <CalendarIcon className="w-5 h-5 text-purple-400" />
+            <h2 className="text-lg font-semibold text-black">{t('invoice.invoiceDetails')}</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex justify-between sm:flex-col sm:justify-start">
+              <span className="text-gray-500 text-sm">{t('invoice.issueDate')}</span>
+              <span className="text-black text-sm font-medium">{new Date(invoice.issueDate).toLocaleDateString()}</span>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-500 text-sm">{t('invoice.issueDate')}</span>
-                <span className="text-black text-sm">{new Date(invoice.issueDate).toLocaleDateString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 text-sm">{t('invoice.dueDate')}</span>
-                <span className="text-black text-sm">{new Date(invoice.dueDate).toLocaleDateString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 text-sm">{t('invoice.totalAmount')}</span>
-                <span className="text-black font-medium text-sm">{formatCurrency(invoice.totalAmount)}</span>
-              </div>
+            <div className="flex justify-between sm:flex-col sm:justify-start">
+              <span className="text-gray-500 text-sm">{t('invoice.dueDate')}</span>
+              <span className="text-black text-sm font-medium">{new Date(invoice.dueDate).toLocaleDateString()}</span>
+            </div>
+            <div className="flex justify-between sm:flex-col sm:justify-start">
+              <span className="text-gray-500 text-sm">{t('invoice.totalAmount')}</span>
+              <span className="text-black text-sm font-medium">{formatCurrency(invoice.totalAmount)}</span>
             </div>
           </div>
         </div>

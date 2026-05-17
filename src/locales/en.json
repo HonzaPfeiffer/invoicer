@@ -100,5 +100,22 @@
     "qty": "Qty",
     "price": "Price",
     "grandTotal": "Grand Total"
+  },
+  "company": {
+    "title": "Company Information",
+    "description": "Set up your company details",
+    "name": "Company Name",
+    "namePlaceholder": "Enter company name",
+    "address": "Company Address",
+    "addressPlaceholder": "Enter company address",
+    "ico": "Company ID (IČO)",
+    "icoPlaceholder": "Enter IČO (8 digits)",
+    "searchPlaceholder": "Search by name or IČO",
+    "searchByAres": "Search in ARES",
+    "noResults": "No results found",
+    "sender": "Sender",
+    "recipient": "Recipient",
+    "clientInfo": "Client Information",
+    "searchClient": "Search Client"
   }
 }

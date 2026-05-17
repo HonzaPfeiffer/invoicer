@@ -8,6 +8,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { useSession } from 'next-auth/react';
 import ClientOnly from '@/app/components/ClientOnly';
 import { currencies } from '@/lib/currencies';
+import CompanySearch from '@/app/components/CompanySearch';
 import { 
   PlusIcon,
   TrashIcon,
@@ -28,10 +29,11 @@ interface Item {
 
 function NewInvoiceContent({ session }: { session: any }) {
   const router = useRouter();
-  const { currency: defaultCurrency } = useSettings();
+  const { currency: defaultCurrency, t } = useSettings();
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientAddress, setClientAddress] = useState('');
+  const [clientIco, setClientIco] = useState('');
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
   const [currency, setCurrency] = useState<'USD' | 'EUR' | 'CZK'>(defaultCurrency);
@@ -63,6 +65,12 @@ function NewInvoiceContent({ session }: { session: any }) {
     return items.reduce((total, item) => total + item.quantity * item.price, 0);
   };
 
+  const handleClientSelect = (company: { ico: string; name: string; address: string }) => {
+    setClientName(company.name);
+    setClientAddress(company.address);
+    setClientIco(company.ico);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -78,6 +86,7 @@ function NewInvoiceContent({ session }: { session: any }) {
           clientName,
           clientEmail,
           clientAddress,
+          clientIco,
           issueDate,
           dueDate,
           items,
@@ -129,14 +138,21 @@ function NewInvoiceContent({ session }: { session: any }) {
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <UserIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-black">Client Information</h2>
+                  <h2 className="text-lg font-semibold text-black">{t('company.clientInfo')}</h2>
+                </div>
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">{t('company.searchClient')}</label>
+                  <CompanySearch
+                    onSelect={handleClientSelect}
+                    placeholder={t('company.searchPlaceholder')}
+                  />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500 mb-2 block">Client Name</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">{t('newInvoice.clientName')}</label>
                     <input
                       type="text"
-                      placeholder="Enter client name"
+                      placeholder={t('newInvoice.clientNamePlaceholder')}
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
                       required
@@ -144,10 +160,10 @@ function NewInvoiceContent({ session }: { session: any }) {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500 mb-2 block">Client Email</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">{t('newInvoice.clientEmail')}</label>
                     <input
                       type="email"
-                      placeholder="Enter client email"
+                      placeholder={t('newInvoice.clientEmailPlaceholder')}
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
                       required
@@ -156,14 +172,25 @@ function NewInvoiceContent({ session }: { session: any }) {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="text-sm font-medium text-gray-500 mb-2 block">Client Address</label>
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">{t('newInvoice.clientAddress')}</label>
                   <textarea
-                    placeholder="Enter client address"
+                    placeholder={t('newInvoice.clientAddressPlaceholder')}
                     value={clientAddress}
                     onChange={(e) => setClientAddress(e.target.value)}
                     required
                     rows={3}
                     className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all resize-none"
+                  />
+                </div>
+                <div className="mt-4">
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">{t('company.ico')}</label>
+                  <input
+                    type="text"
+                    placeholder={t('company.icoPlaceholder')}
+                    value={clientIco}
+                    onChange={(e) => setClientIco(e.target.value)}
+                    maxLength={8}
+                    className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
                   />
                 </div>
               </div>

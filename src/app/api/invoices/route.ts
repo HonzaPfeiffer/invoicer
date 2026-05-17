@@ -37,18 +37,31 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { clientName, clientAddress, clientEmail, issueDate, dueDate, items, totalAmount, currency, status } = body;
+        const { clientName, clientAddress, clientEmail, clientIco, issueDate, dueDate, items, totalAmount, currency, status } = body;
 
         // Basic validation
         if (!clientName || !issueDate || !dueDate || !items || !totalAmount) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
         }
 
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: {
+                companyName: true,
+                companyAddress: true,
+                companyIco: true,
+            },
+        });
+
         const invoice = await prisma.invoice.create({
             data: {
                 clientName,
                 clientAddress,
                 clientEmail,
+                clientIco,
+                senderName: user?.companyName,
+                senderAddress: user?.companyAddress,
+                senderIco: user?.companyIco,
                 issueDate: new Date(issueDate),
                 dueDate: new Date(dueDate),
                 items,
@@ -56,7 +69,6 @@ export async function POST(request: Request) {
                 currency: currency || 'USD',
                 status,
                 ownerId: session.user.id,
-                // A simple way to generate a somewhat unique invoice number
                 invoiceNumber: `INV-${Date.now()}` 
             }
         });

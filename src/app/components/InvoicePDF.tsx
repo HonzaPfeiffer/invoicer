@@ -205,6 +205,16 @@ const InvoicePDF = ({ invoice, currency, language }: InvoicePDFProps) => {
                 </View>
             </View>
 
+            {/* Sender Information (if available) */}
+            {(invoice.senderName || invoice.senderAddress || invoice.senderIco) && (
+                <View style={{ marginBottom: 20 }}>
+                    <Text style={styles.sectionLabel}>{t('company.sender').toUpperCase()}</Text>
+                    {invoice.senderName && <Text style={styles.infoName}>{invoice.senderName}</Text>}
+                    {invoice.senderAddress && <Text style={styles.infoText}>{invoice.senderAddress}</Text>}
+                    {invoice.senderIco && <Text style={styles.infoText}>{t('company.ico')}: {invoice.senderIco}</Text>}
+                </View>
+            )}
+
             {/* Two-column info: Billed To + Invoice Details */}
             <View style={styles.infoRow}>
                 <View style={styles.infoCol}>
@@ -212,6 +222,7 @@ const InvoicePDF = ({ invoice, currency, language }: InvoicePDFProps) => {
                     <Text style={styles.infoName}>{invoice.clientName}</Text>
                     <Text style={styles.infoText}>{invoice.clientAddress}</Text>
                     <Text style={styles.infoText}>{invoice.clientEmail}</Text>
+                    {invoice.clientIco && <Text style={styles.infoText}>{t('company.ico')}: {invoice.clientIco}</Text>}
                 </View>
                 <View style={styles.infoCol}>
                     <Text style={styles.sectionLabel}>{t('pdf.invoiceDetails').toUpperCase()}</Text>

@@ -3,19 +3,74 @@
 import { redirect } from 'next/navigation';
 import Navigation from '../components/Navigation';
 import { useSettings } from '@/contexts/SettingsContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import ClientOnly from '../components/ClientOnly';
 import { currencies } from '@/lib/currencies';
 import LogoutButton from '../components/LogoutButton';
+import CompanySearch from '../components/CompanySearch';
 
 function SettingsContent({ session }: { session: any }) {
   const { language, currency, setLanguage, setCurrency, t } = useSettings();
   const [showSaved, setShowSaved] = useState(false);
+  const [companyName, setCompanyName] = useState('');
+  const [companyAddress, setCompanyAddress] = useState('');
+  const [companyIco, setCompanyIco] = useState('');
+  const [isLoadingCompany, setIsLoadingCompany] = useState(true);
+  const [isSavingCompany, setIsSavingCompany] = useState(false);
+
+  useEffect(() => {
+    const loadCompanyInfo = async () => {
+      try {
+        const response = await fetch('/api/user/company');
+        if (response.ok) {
+          const data = await response.json();
+          setCompanyName(data.companyName || '');
+          setCompanyAddress(data.companyAddress || '');
+          setCompanyIco(data.companyIco || '');
+        }
+      } catch (error) {
+        console.error('Error loading company info:', error);
+      } finally {
+        setIsLoadingCompany(false);
+      }
+    };
+
+    loadCompanyInfo();
+  }, []);
 
   const handleSave = () => {
     setShowSaved(true);
     setTimeout(() => setShowSaved(false), 3000);
+  };
+
+  const handleSaveCompany = async () => {
+    setIsSavingCompany(true);
+    try {
+      const response = await fetch('/api/user/company', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyName,
+          companyAddress,
+          companyIco,
+        }),
+      });
+
+      if (response.ok) {
+        handleSave();
+      }
+    } catch (error) {
+      console.error('Error saving company info:', error);
+    } finally {
+      setIsSavingCompany(false);
+    }
+  };
+
+  const handleCompanySelect = (company: { ico: string; name: string; address: string }) => {
+    setCompanyName(company.name);
+    setCompanyAddress(company.address);
+    setCompanyIco(company.ico);
   };
 
   return (
@@ -36,6 +91,80 @@ function SettingsContent({ session }: { session: any }) {
           )}
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-200">
+            {/* Company Information */}
+            <div className="p-6">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">{t('company.title')}</h2>
+                <p className="text-sm text-gray-500 mt-1">{t('company.description')}</p>
+              </div>
+
+              {isLoadingCompany ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      {t('company.searchByAres')}
+                    </label>
+                    <CompanySearch
+                      onSelect={handleCompanySelect}
+                      placeholder={t('company.searchPlaceholder')}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      {t('company.name')}
+                    </label>
+                    <input
+                      type="text"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      placeholder={t('company.namePlaceholder')}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      {t('company.address')}
+                    </label>
+                    <textarea
+                      value={companyAddress}
+                      onChange={(e) => setCompanyAddress(e.target.value)}
+                      placeholder={t('company.addressPlaceholder')}
+                      rows={3}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      {t('company.ico')}
+                    </label>
+                    <input
+                      type="text"
+                      value={companyIco}
+                      onChange={(e) => setCompanyIco(e.target.value)}
+                      placeholder={t('company.icoPlaceholder')}
+                      maxLength={8}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleSaveCompany}
+                    disabled={isSavingCompany}
+                    className="w-full sm:w-auto px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSavingCompany ? t('common.loading') : t('common.save')}
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Language Setting */}
             <div className="p-6">
               <div className="mb-4">

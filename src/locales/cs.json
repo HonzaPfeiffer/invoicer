@@ -100,5 +100,22 @@
     "qty": "Množ.",
     "price": "Cena",
     "grandTotal": "Celkem"
+  },
+  "company": {
+    "title": "Informace o společnosti",
+    "description": "Nastavte údaje vaší společnosti",
+    "name": "Název společnosti",
+    "namePlaceholder": "Zadejte název společnosti",
+    "address": "Adresa společnosti",
+    "addressPlaceholder": "Zadejte adresu společnosti",
+    "ico": "IČO",
+    "icoPlaceholder": "Zadejte IČO (8 číslic)",
+    "searchPlaceholder": "Vyhledat podle názvu nebo IČO",
+    "searchByAres": "Vyhledat v ARES",
+    "noResults": "Žádné výsledky",
+    "sender": "Dodavatel",
+    "recipient": "Odběratel",
+    "clientInfo": "Informace o odběrateli",
+    "searchClient": "Vyhledat odběratele"
   }
 }
