@@ -39,6 +39,8 @@
     "description": "Description",
     "quantity": "Quantity",
     "qty": "Qty",
+    "unit": "Unit",
+    "units": "Unit",
     "price": "Price",
     "grandTotal": "Grand Total"
   },
@@ -53,10 +55,13 @@
     "clientEmail": "Client Email",
     "clientEmailPlaceholder": "client@example.com",
     "invoiceDates": "Invoice Dates",
+    "invoiceDetails": "Invoice Details",
     "invoiceItems": "Invoice Items",
     "addItem": "Add Item",
     "itemDescription": "Description",
     "itemDescriptionPlaceholder": "Item description",
+    "itemUnit": "Unit",
+    "itemUnitPlaceholder": "pcs, hrs, m²...",
     "createInvoice": "Create Invoice",
     "creating": "Creating..."
   },

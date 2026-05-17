@@ -24,6 +24,7 @@ import Link from 'next/link';
 interface Item {
   description: string;
   quantity: number;
+  unit: string;
   price: number;
 }
 
@@ -37,15 +38,15 @@ function NewInvoiceContent({ session }: { session: any }) {
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
   const [currency, setCurrency] = useState<'USD' | 'EUR' | 'CZK'>(defaultCurrency);
-  const [items, setItems] = useState<Item[]>([{ description: '', quantity: 1, price: 0 }]);
+  const [items, setItems] = useState<Item[]>([{ description: '', quantity: 1, unit: '', price: 0 }]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleItemChange = (index: number, field: keyof Item, value: string | number) => {
     const newItems = [...items];
     const item = newItems[index];
-    if (field === 'description') {
-        item.description = value as string;
+    if (field === 'description' || field === 'unit') {
+        item[field] = value as string;
     } else {
         item[field] = Number(value);
     }
@@ -53,7 +54,7 @@ function NewInvoiceContent({ session }: { session: any }) {
   };
 
   const addItem = () => {
-    setItems([...items, { description: '', quantity: 1, price: 0 }]);
+    setItems([...items, { description: '', quantity: 1, unit: '', price: 0 }]);
   };
 
   const removeItem = (index: number) => {
@@ -199,7 +200,7 @@ function NewInvoiceContent({ session }: { session: any }) {
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <CalendarIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-black">Invoice Details</h2>
+                  <h2 className="text-lg font-semibold text-black">{t('newInvoice.invoiceDetails')}</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
@@ -244,7 +245,7 @@ function NewInvoiceContent({ session }: { session: any }) {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
                     <DocumentTextIcon className="w-5 h-5 text-purple-400" />
-                    <h2 className="text-lg font-semibold text-black">Invoice Items</h2>
+                    <h2 className="text-lg font-semibold text-black">{t('newInvoice.invoiceItems')}</h2>
                   </div>
                   <button
                     type="button"
@@ -262,7 +263,7 @@ function NewInvoiceContent({ session }: { session: any }) {
                       <div className="flex-1">
                         <input
                           type="text"
-                          placeholder="Description"
+                          placeholder={t('newInvoice.itemDescriptionPlaceholder')}
                           value={item.description}
                           onChange={(e) => handleItemChange(index, 'description', e.target.value)}
                           required
@@ -272,7 +273,7 @@ function NewInvoiceContent({ session }: { session: any }) {
                       <div className="w-16 sm:w-20">
                         <input
                           type="number"
-                          placeholder="Qty"
+                          placeholder={t('invoice.qty')}
                           value={item.quantity}
                           onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
                           min="1"
@@ -280,10 +281,19 @@ function NewInvoiceContent({ session }: { session: any }) {
                           className="w-full bg-white/5 border border-gray-600 rounded-lg px-3 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm text-center"
                         />
                       </div>
+                      <div className="w-16 sm:w-20">
+                        <input
+                          type="text"
+                          placeholder={t('newInvoice.itemUnitPlaceholder')}
+                          value={item.unit}
+                          onChange={(e) => handleItemChange(index, 'unit', e.target.value)}
+                          className="w-full bg-white/5 border border-gray-600 rounded-lg px-3 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm text-center"
+                        />
+                      </div>
                       <div className="w-24 sm:w-32">
                         <input
                           type="number"
-                          placeholder="Price"
+                          placeholder={t('invoice.price')}
                           value={item.price}
                           onChange={(e) => handleItemChange(index, 'price', e.target.value)}
                           min="0"

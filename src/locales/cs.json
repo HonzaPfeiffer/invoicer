@@ -39,6 +39,8 @@
     "description": "Popis",
     "quantity": "Množství",
     "qty": "Množ.",
+    "unit": "Jednotka",
+    "units": "Jedn.",
     "price": "Cena",
     "grandTotal": "Celkem"
   },
@@ -53,10 +55,13 @@
     "clientEmail": "Email klienta",
     "clientEmailPlaceholder": "klient@priklad.cz",
     "invoiceDates": "Data faktury",
+    "invoiceDetails": "Detaily faktury",
     "invoiceItems": "Položky faktury",
     "addItem": "Přidat položku",
     "itemDescription": "Popis",
     "itemDescriptionPlaceholder": "Popis položky",
+    "itemUnit": "Jednotka",
+    "itemUnitPlaceholder": "ks, hod, m²...",
     "createInvoice": "Vytvořit fakturu",
     "creating": "Vytváření..."
   },

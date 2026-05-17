@@ -17,7 +17,7 @@ import {
 
 interface InvoiceDetailClientProps {
   invoice: Invoice;
-  items: { description: string; quantity: number; price: number }[];
+  items: { description: string; quantity: number; unit?: string; price: number }[];
 }
 
 function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
@@ -182,6 +182,7 @@ function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
               <tr className="border-b border-gray-700">
                 <th className="text-left p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.description')}</th>
                 <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.quantity')}</th>
+                <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.unit')}</th>
                 <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.price')}</th>
                 <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.total')}</th>
               </tr>
@@ -191,6 +192,7 @@ function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
                 <tr key={index} className="border-b border-gray-800">
                   <td className="p-3 sm:p-4 text-gray-500 text-sm">{item.description}</td>
                   <td className="p-3 sm:p-4 text-gray-500 text-sm text-right">{item.quantity}</td>
+                  <td className="p-3 sm:p-4 text-gray-500 text-sm text-right">{item.unit || '-'}</td>
                   <td className="p-3 sm:p-4 text-gray-500 text-sm text-right">{formatCurrency(item.price)}</td>
                   <td className="p-3 sm:p-4 text-black font-medium text-sm text-right">{formatCurrency(item.quantity * item.price)}</td>
                 </tr>

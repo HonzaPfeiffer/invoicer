@@ -1,7 +1,29 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 import { Invoice } from '@prisma/client';
 import enTranslations from '@/locales/en.json';
 import csTranslations from '@/locales/cs.json';
+
+Font.register({
+  family: 'Roboto',
+  fonts: [
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf',
+      fontWeight: 300,
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf',
+      fontWeight: 400,
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf',
+      fontWeight: 500,
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf',
+      fontWeight: 700,
+    },
+  ],
+});
 
 const colors = {
   black: '#000000',
@@ -15,7 +37,7 @@ const colors = {
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Helvetica',
+    fontFamily: 'Roboto',
     fontSize: 10,
     padding: 40,
     backgroundColor: colors.white,
@@ -105,10 +127,11 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.gray100,
     paddingVertical: 8,
   },
-  colDesc: { width: '40%' },
-  colQty: { width: '15%', textAlign: 'right' },
-  colPrice: { width: '20%', textAlign: 'right' },
-  colTotal: { width: '25%', textAlign: 'right' },
+  colDesc: { width: '35%' },
+  colQty: { width: '12%', textAlign: 'right' },
+  colUnit: { width: '13%', textAlign: 'right' },
+  colPrice: { width: '18%', textAlign: 'right' },
+  colTotal: { width: '22%', textAlign: 'right' },
   thText: {
     fontSize: 9,
     fontWeight: 'bold',
@@ -164,7 +187,7 @@ interface InvoicePDFProps {
 
 const InvoicePDF = ({ invoice, currency, language }: InvoicePDFProps) => {
     const raw = typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items;
-    const items = raw as { description: string; quantity: number; price: number }[];
+    const items = raw as { description: string; quantity: number; unit?: string; price: number }[];
     const fmt = (n: number) => new Intl.NumberFormat(language === 'cs' ? 'cs-CZ' : 'en-US', { 
       style: 'currency', 
       currency: currency 
@@ -247,6 +270,7 @@ const InvoicePDF = ({ invoice, currency, language }: InvoicePDFProps) => {
             <View style={styles.tableHeader}>
                 <View style={styles.colDesc}><Text style={styles.thText}>{t('pdf.description')}</Text></View>
                 <View style={styles.colQty}><Text style={{...styles.thText, textAlign: 'right'}}>{t('pdf.qty')}</Text></View>
+                <View style={styles.colUnit}><Text style={{...styles.thText, textAlign: 'right'}}>{t('invoice.units')}</Text></View>
                 <View style={styles.colPrice}><Text style={{...styles.thText, textAlign: 'right'}}>{t('pdf.price')}</Text></View>
                 <View style={styles.colTotal}><Text style={{...styles.thText, textAlign: 'right'}}>{t('pdf.total')}</Text></View>
             </View>
@@ -256,6 +280,7 @@ const InvoicePDF = ({ invoice, currency, language }: InvoicePDFProps) => {
                 <View style={styles.tableRow} key={index}>
                     <View style={styles.colDesc}><Text style={styles.tdText}>{item.description}</Text></View>
                     <View style={styles.colQty}><Text style={{...styles.tdText, textAlign: 'right'}}>{item.quantity}</Text></View>
+                    <View style={styles.colUnit}><Text style={{...styles.tdText, textAlign: 'right'}}>{item.unit || '-'}</Text></View>
                     <View style={styles.colPrice}><Text style={{...styles.tdText, textAlign: 'right'}}>{fmt(item.price)}</Text></View>
                     <View style={styles.colTotal}><Text style={{...styles.tdTextBold, textAlign: 'right'}}>{fmt(item.quantity * item.price)}</Text></View>
                 </View>
