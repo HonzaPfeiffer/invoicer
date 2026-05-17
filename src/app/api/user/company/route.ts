@@ -1,8 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../../auth/[...nextauth]/route';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
+/**
+ * @swagger
+ * /api/user/company:
+ *   get:
+ *     summary: Získat informace o společnosti uživatele
+ *     description: Vrací informace o společnosti přihlášeného uživatele (název, adresa, IČO)
+ *     tags:
+ *       - User
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Informace o společnosti úspěšně načteny
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserCompany'
+ *       401:
+ *         description: Neautorizovaný přístup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Interní chyba serveru
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
@@ -27,6 +58,52 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * @swagger
+ * /api/user/company:
+ *   put:
+ *     summary: Aktualizovat informace o společnosti uživatele
+ *     description: Aktualizuje informace o společnosti přihlášeného uživatele (název, adresa, IČO)
+ *     tags:
+ *       - User
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               companyName:
+ *                 type: string
+ *                 description: Název společnosti
+ *               companyAddress:
+ *                 type: string
+ *                 description: Adresa společnosti
+ *               companyIco:
+ *                 type: string
+ *                 description: IČO společnosti
+ *     responses:
+ *       200:
+ *         description: Informace o společnosti úspěšně aktualizovány
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserCompany'
+ *       401:
+ *         description: Neautorizovaný přístup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Chyba při aktualizaci informací
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function PUT(request: NextRequest) {
   const session = await getServerSession(authOptions);
 

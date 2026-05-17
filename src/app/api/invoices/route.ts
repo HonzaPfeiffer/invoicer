@@ -3,7 +3,38 @@ import { authOptions } from '../auth/[...nextauth]/route';
 import { prisma } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-// GET all invoices for the logged-in user
+/**
+ * @swagger
+ * /api/invoices:
+ *   get:
+ *     summary: Získat všechny faktury přihlášeného uživatele
+ *     description: Vrací seznam všech faktur patřících aktuálně přihlášenému uživateli, seřazených podle data vytvoření (nejnovější první)
+ *     tags:
+ *       - Invoices
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Seznam faktur úspěšně načten
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Invoice'
+ *       401:
+ *         description: Neautorizovaný přístup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Interní chyba serveru
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET() {
   const session = await getServerSession(authOptions);
 
@@ -27,7 +58,85 @@ export async function GET() {
   }
 }
 
-// POST a new invoice
+/**
+ * @swagger
+ * /api/invoices:
+ *   post:
+ *     summary: Vytvořit novou fakturu
+ *     description: Vytvoří novou fakturu s informacemi o dodavateli (z nastavení uživatele) a odběrateli
+ *     tags:
+ *       - Invoices
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - clientName
+ *               - clientAddress
+ *               - clientEmail
+ *               - issueDate
+ *               - dueDate
+ *               - items
+ *               - totalAmount
+ *               - currency
+ *             properties:
+ *               clientName:
+ *                 type: string
+ *                 description: Název klienta/odběratele
+ *               clientAddress:
+ *                 type: string
+ *                 description: Adresa klienta
+ *               clientEmail:
+ *                 type: string
+ *                 format: email
+ *                 description: Email klienta
+ *               clientIco:
+ *                 type: string
+ *                 description: IČO klienta (volitelné)
+ *               issueDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Datum vystavení faktury
+ *               dueDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Datum splatnosti faktury
+ *               items:
+ *                 type: array
+ *                 description: Položky faktury
+ *                 items:
+ *                   $ref: '#/components/schemas/InvoiceItem'
+ *               totalAmount:
+ *                 type: number
+ *                 description: Celková částka faktury
+ *               currency:
+ *                 type: string
+ *                 enum: [USD, EUR, CZK]
+ *                 description: Měna faktury
+ *     responses:
+ *       201:
+ *         description: Faktura úspěšně vytvořena
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Invoice'
+ *       401:
+ *         description: Neautorizovaný přístup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Interní chyba serveru
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
