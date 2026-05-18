@@ -5,8 +5,8 @@ import { searchCompaniesByName, searchCompaniesByIco } from '@/lib/ares';
  * @swagger
  * /api/ares/search:
  *   get:
- *     summary: Vyhledat společnost v ARES
- *     description: Vyhledá českou společnost podle názvu nebo IČO pomocí ARES API
+ *     summary: Search for a company in ARES
+ *     description: Searches for a Czech company by name or IČO using the ARES API
  *     tags:
  *       - ARES
  *     parameters:
@@ -15,16 +15,16 @@ import { searchCompaniesByName, searchCompaniesByIco } from '@/lib/ares';
  *         required: false
  *         schema:
  *           type: string
- *         description: Vyhledávací dotaz (název společnosti)
+ *         description: Search query (company name)
  *       - in: query
  *         name: ico
  *         required: false
  *         schema:
  *           type: string
- *         description: IČO společnosti
+ *         description: Company IČO
  *     responses:
  *       200:
- *         description: Seznam nalezených společností
+ *         description: List of found companies
  *         content:
  *           application/json:
  *             schema:
@@ -35,13 +35,13 @@ import { searchCompaniesByName, searchCompaniesByIco } from '@/lib/ares';
  *                   items:
  *                     $ref: '#/components/schemas/Company'
  *       400:
- *         description: Chybějící parametr query nebo ico
+ *         description: Missing query or ico parameter
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: Chyba při vyhledávání v ARES
+ *         description: Error searching in ARES
  *         content:
  *           application/json:
  *             schema:

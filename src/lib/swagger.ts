@@ -6,7 +6,7 @@ const options: swaggerJsdoc.Options = {
     info: {
       title: 'Invoicer API',
       version: '1.0.0',
-      description: 'API dokumentace pro fakturační systém s podporou českého IČO a ARES integrace',
+      description: 'API documentation for invoicing system with Czech IČO and ARES integration support',
       contact: {
         name: 'API Support',
       },

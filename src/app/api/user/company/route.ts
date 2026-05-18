@@ -1,34 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
 /**
  * @swagger
  * /api/user/company:
  *   get:
- *     summary: Získat informace o společnosti uživatele
- *     description: Vrací informace o společnosti přihlášeného uživatele (název, adresa, IČO)
+ *     summary: Get user company information
+ *     description: Returns company information for the authenticated user (name, address, IČO)
  *     tags:
  *       - User
  *     security:
  *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: Informace o společnosti úspěšně načteny
+ *         description: Company information successfully retrieved
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/UserCompany'
  *       401:
- *         description: Neautorizovaný přístup
+ *         description: Unauthorized access
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: Interní chyba serveru
+ *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
@@ -62,8 +61,8 @@ export async function GET(request: NextRequest) {
  * @swagger
  * /api/user/company:
  *   put:
- *     summary: Aktualizovat informace o společnosti uživatele
- *     description: Aktualizuje informace o společnosti přihlášeného uživatele (název, adresa, IČO)
+ *     summary: Update user company information
+ *     description: Updates company information for the authenticated user (name, address, IČO)
  *     tags:
  *       - User
  *     security:
@@ -77,28 +76,28 @@ export async function GET(request: NextRequest) {
  *             properties:
  *               companyName:
  *                 type: string
- *                 description: Název společnosti
+ *                 description: Company name
  *               companyAddress:
  *                 type: string
- *                 description: Adresa společnosti
+ *                 description: Company address
  *               companyIco:
  *                 type: string
- *                 description: IČO společnosti
+ *                 description: Company IČO
  *     responses:
  *       200:
- *         description: Informace o společnosti úspěšně aktualizovány
+ *         description: Company information successfully updated
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/UserCompany'
  *       401:
- *         description: Neautorizovaný přístup
+ *         description: Unauthorized access
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: Chyba při aktualizaci informací
+ *         description: Error updating information
  *         content:
  *           application/json:
  *             schema:

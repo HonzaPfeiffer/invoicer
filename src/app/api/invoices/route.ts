@@ -7,15 +7,15 @@ import { NextResponse } from 'next/server';
  * @swagger
  * /api/invoices:
  *   get:
- *     summary: Získat všechny faktury přihlášeného uživatele
- *     description: Vrací seznam všech faktur patřících aktuálně přihlášenému uživateli, seřazených podle data vytvoření (nejnovější první)
+ *     summary: Get all invoices for the authenticated user
+ *     description: Returns a list of all invoices belonging to the currently authenticated user, sorted by creation date (newest first)
  *     tags:
  *       - Invoices
  *     security:
  *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: Seznam faktur úspěšně načten
+ *         description: List of invoices successfully retrieved
  *         content:
  *           application/json:
  *             schema:
@@ -23,13 +23,13 @@ import { NextResponse } from 'next/server';
  *               items:
  *                 $ref: '#/components/schemas/Invoice'
  *       401:
- *         description: Neautorizovaný přístup
+ *         description: Unauthorized access
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: Interní chyba serveru
+ *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
@@ -62,8 +62,8 @@ export async function GET() {
  * @swagger
  * /api/invoices:
  *   post:
- *     summary: Vytvořit novou fakturu
- *     description: Vytvoří novou fakturu s informacemi o dodavateli (z nastavení uživatele) a odběrateli
+ *     summary: Create a new invoice
+ *     description: Creates a new invoice with sender information (from user settings) and recipient details
  *     tags:
  *       - Invoices
  *     security:
@@ -86,52 +86,52 @@ export async function GET() {
  *             properties:
  *               clientName:
  *                 type: string
- *                 description: Název klienta/odběratele
+ *                 description: Client/recipient name
  *               clientAddress:
  *                 type: string
- *                 description: Adresa klienta
+ *                 description: Client address
  *               clientEmail:
  *                 type: string
  *                 format: email
- *                 description: Email klienta
+ *                 description: Client email
  *               clientIco:
  *                 type: string
- *                 description: IČO klienta (volitelné)
+ *                 description: Client IČO (optional)
  *               issueDate:
  *                 type: string
  *                 format: date
- *                 description: Datum vystavení faktury
+ *                 description: Invoice issue date
  *               dueDate:
  *                 type: string
  *                 format: date
- *                 description: Datum splatnosti faktury
+ *                 description: Invoice due date
  *               items:
  *                 type: array
- *                 description: Položky faktury
+ *                 description: Invoice items
  *                 items:
  *                   $ref: '#/components/schemas/InvoiceItem'
  *               totalAmount:
  *                 type: number
- *                 description: Celková částka faktury
+ *                 description: Total invoice amount
  *               currency:
  *                 type: string
  *                 enum: [USD, EUR, CZK]
- *                 description: Měna faktury
+ *                 description: Invoice currency
  *     responses:
  *       201:
- *         description: Faktura úspěšně vytvořena
+ *         description: Invoice successfully created
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Invoice'
  *       401:
- *         description: Neautorizovaný přístup
+ *         description: Unauthorized access
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: Interní chyba serveru
+ *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
