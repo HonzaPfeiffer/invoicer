@@ -2,17 +2,55 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-
-const menuItems = [
-  { name: 'Dashboard', href: '/dashboard' },
-  { name: 'Invoices', href: '/' },
-  { name: 'Settings', href: '/settings' },
-];
+import { useState, useEffect, useMemo } from 'react';
 
 export default function Navigation({ session }: { session: any }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [language, setLanguage] = useState<'en' | 'cs'>('en');
+  
+  useEffect(() => {
+    setMounted(true);
+    const savedLanguage = localStorage.getItem('language') as 'en' | 'cs';
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+
+    const handleStorageChange = () => {
+      const newLanguage = localStorage.getItem('language') as 'en' | 'cs';
+      if (newLanguage) {
+        setLanguage(newLanguage);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    const interval = setInterval(handleStorageChange, 100);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const translations: Record<'en' | 'cs', Record<string, string>> = {
+    en: {
+      dashboard: 'Dashboard',
+      invoices: 'Invoices',
+      settings: 'Settings',
+    },
+    cs: {
+      dashboard: 'Přehled',
+      invoices: 'Faktury',
+      settings: 'Nastavení',
+    }
+  };
+
+  const menuItems = useMemo(() => [
+    { name: translations[language].dashboard, href: '/dashboard' },
+    { name: translations[language].invoices, href: '/' },
+    { name: translations[language].settings, href: '/settings' },
+  ], [language]);
 
   return (
     <>

@@ -1,0 +1,220 @@
+'use client';
+
+import Link from 'next/link';
+import { Invoice } from '@prisma/client';
+import PDFDownloadButton from './PDFDownloadButton';
+import { useSettings } from '@/contexts/SettingsContext';
+import ClientOnly from './ClientOnly';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { 
+  ArrowLeftIcon,
+  CalendarIcon,
+  UserIcon,
+  EnvelopeIcon,
+  MapPinIcon
+} from '@heroicons/react/24/outline';
+
+interface InvoiceDetailClientProps {
+  invoice: Invoice;
+  items: { description: string; quantity: number; unit?: string; price: number }[];
+}
+
+function InvoiceDetailContent({ invoice, items }: InvoiceDetailClientProps) {
+  const { t, language } = useSettings();
+  const router = useRouter();
+  const [currentStatus, setCurrentStatus] = useState(invoice.status);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (newStatus === currentStatus) return;
+    
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/invoices/${invoice.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+
+      setCurrentStatus(newStatus);
+      router.refresh();
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert(t('status.statusUpdateFailed'));
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat(language === 'cs' ? 'cs-CZ' : 'en-US', {
+      style: 'currency',
+      currency: invoice.currency || 'USD'
+    }).format(amount);
+  };
+
+  return (
+    <>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 fade-in">
+        <div className="flex items-center space-x-4 mb-4 sm:mb-0">
+          <Link href="/">
+            <button className="btn-glass p-2">
+              <ArrowLeftIcon className="w-5 h-5" />
+            </button>
+          </Link>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-black mb-1">{t('invoices.invoice')} {invoice.invoiceNumber}</h1>
+            <p className="text-gray-500 text-sm sm:text-base">{t('invoices.details')}</p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-3">
+          <select
+            value={currentStatus}
+            onChange={(e) => handleStatusChange(e.target.value)}
+            disabled={isUpdating}
+            className={`px-3 py-1 text-xs sm:text-sm font-medium rounded-full border cursor-pointer transition-all ${
+              currentStatus === 'PAID' 
+                ? 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30' 
+                : currentStatus === 'SENT'
+                ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30'
+                : 'bg-gray-500/20 text-gray-500 border-gray-500/30 hover:bg-gray-500/30'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            <option value="DRAFT">{t('status.DRAFT')}</option>
+            <option value="SENT">{t('status.SENT')}</option>
+            <option value="PAID">{t('status.PAID')}</option>
+          </select>
+          <PDFDownloadButton invoice={invoice} />
+        </div>
+      </div>
+
+      {/* Invoice Content */}
+      <div className="glass-card p-6 sm:p-8 fade-in" style={{ animationDelay: '100ms' }}>
+        {/* Sender and Recipient */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
+          {/* Sender (From) */}
+          {(invoice.senderName || invoice.senderAddress || invoice.senderIco) && (
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <UserIcon className="w-5 h-5 text-purple-400" />
+                <h2 className="text-lg font-semibold text-black">{t('company.sender')}</h2>
+              </div>
+              <div className="space-y-2">
+                {invoice.senderName && (
+                  <p className="text-black font-medium">{invoice.senderName}</p>
+                )}
+                {invoice.senderAddress && (
+                  <div className="flex items-start space-x-2 text-gray-500 text-sm">
+                    <MapPinIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>{invoice.senderAddress}</span>
+                  </div>
+                )}
+                {invoice.senderIco && (
+                  <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                    <span className="font-medium">{t('company.ico')}:</span>
+                    <span>{invoice.senderIco}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Billed To (Recipient) */}
+          <div>
+            <div className="flex items-center space-x-2 mb-4">
+              <UserIcon className="w-5 h-5 text-purple-400" />
+              <h2 className="text-lg font-semibold text-black">{t('invoice.billedTo')}</h2>
+            </div>
+            <div className="space-y-2">
+              <p className="text-black font-medium">{invoice.clientName}</p>
+              <div className="flex items-start space-x-2 text-gray-500 text-sm">
+                <MapPinIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>{invoice.clientAddress}</span>
+              </div>
+              <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                <EnvelopeIcon className="w-4 h-4 flex-shrink-0" />
+                <span>{invoice.clientEmail}</span>
+              </div>
+              {invoice.clientIco && (
+                <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                  <span className="font-medium">{t('company.ico')}:</span>
+                  <span>{invoice.clientIco}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Invoice Details */}
+        <div className="mb-8 pb-6 border-b border-gray-700">
+          <div className="flex items-center space-x-2 mb-4">
+            <CalendarIcon className="w-5 h-5 text-purple-400" />
+            <h2 className="text-lg font-semibold text-black">{t('invoice.invoiceDetails')}</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex justify-between sm:flex-col sm:justify-start">
+              <span className="text-gray-500 text-sm">{t('invoice.issueDate')}</span>
+              <span className="text-black text-sm font-medium">{new Date(invoice.issueDate).toLocaleDateString()}</span>
+            </div>
+            <div className="flex justify-between sm:flex-col sm:justify-start">
+              <span className="text-gray-500 text-sm">{t('invoice.dueDate')}</span>
+              <span className="text-black text-sm font-medium">{new Date(invoice.dueDate).toLocaleDateString()}</span>
+            </div>
+            <div className="flex justify-between sm:flex-col sm:justify-start">
+              <span className="text-gray-500 text-sm">{t('invoice.totalAmount')}</span>
+              <span className="text-black text-sm font-medium">{formatCurrency(invoice.totalAmount)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Items Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-700">
+                <th className="text-left p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.description')}</th>
+                <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.quantity')}</th>
+                <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.unit')}</th>
+                <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.price')}</th>
+                <th className="text-right p-3 sm:p-4 text-gray-500 font-medium text-sm">{t('invoice.total')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => (
+                <tr key={index} className="border-b border-gray-800">
+                  <td className="p-3 sm:p-4 text-gray-500 text-sm">{item.description}</td>
+                  <td className="p-3 sm:p-4 text-gray-500 text-sm text-right">{item.quantity}</td>
+                  <td className="p-3 sm:p-4 text-gray-500 text-sm text-right">{item.unit || '-'}</td>
+                  <td className="p-3 sm:p-4 text-gray-500 text-sm text-right">{formatCurrency(item.price)}</td>
+                  <td className="p-3 sm:p-4 text-black font-medium text-sm text-right">{formatCurrency(item.quantity * item.price)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={3} className="text-right font-bold p-3 sm:p-4 text-black text-sm">{t('invoice.grandTotal')}</td>
+                <td className="text-right font-bold p-3 sm:p-4 text-lg text-purple-400">{formatCurrency(invoice.totalAmount)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default function InvoiceDetailClient({ invoice, items }: InvoiceDetailClientProps) {
+  return (
+    <ClientOnly>
+      <InvoiceDetailContent invoice={invoice} items={items} />
+    </ClientOnly>
+  );
+}

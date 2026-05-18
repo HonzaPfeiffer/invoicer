@@ -2,10 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import Navigation from '@/app/components/Navigation';
+import { useSettings } from '@/contexts/SettingsContext';
+import { useSession } from 'next-auth/react';
+import ClientOnly from '@/app/components/ClientOnly';
+import { currencies } from '@/lib/currencies';
+import CompanySearch from '@/app/components/CompanySearch';
 import { 
   PlusIcon,
   TrashIcon,
@@ -21,25 +24,29 @@ import Link from 'next/link';
 interface Item {
   description: string;
   quantity: number;
+  unit: string;
   price: number;
 }
 
-export default function NewInvoice() {
+function NewInvoiceContent({ session }: { session: any }) {
   const router = useRouter();
+  const { currency: defaultCurrency, t } = useSettings();
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientAddress, setClientAddress] = useState('');
+  const [clientIco, setClientIco] = useState('');
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
-  const [items, setItems] = useState<Item[]>([{ description: '', quantity: 1, price: 0 }]);
+  const [currency, setCurrency] = useState<'USD' | 'EUR' | 'CZK'>(defaultCurrency);
+  const [items, setItems] = useState<Item[]>([{ description: '', quantity: 1, unit: '', price: 0 }]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleItemChange = (index: number, field: keyof Item, value: string | number) => {
     const newItems = [...items];
     const item = newItems[index];
-    if (field === 'description') {
-        item.description = value as string;
+    if (field === 'description' || field === 'unit') {
+        item[field] = value as string;
     } else {
         item[field] = Number(value);
     }
@@ -47,7 +54,7 @@ export default function NewInvoice() {
   };
 
   const addItem = () => {
-    setItems([...items, { description: '', quantity: 1, price: 0 }]);
+    setItems([...items, { description: '', quantity: 1, unit: '', price: 0 }]);
   };
 
   const removeItem = (index: number) => {
@@ -57,6 +64,12 @@ export default function NewInvoice() {
 
   const calculateTotal = () => {
     return items.reduce((total, item) => total + item.quantity * item.price, 0);
+  };
+
+  const handleClientSelect = (company: { ico: string; name: string; address: string }) => {
+    setClientName(company.name);
+    setClientAddress(company.address);
+    setClientIco(company.ico);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,10 +87,12 @@ export default function NewInvoice() {
           clientName,
           clientEmail,
           clientAddress,
+          clientIco,
           issueDate,
           dueDate,
           items,
           totalAmount,
+          currency,
           status: 'DRAFT',
         }),
       });
@@ -124,14 +139,21 @@ export default function NewInvoice() {
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <UserIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-black">Client Information</h2>
+                  <h2 className="text-lg font-semibold text-black">{t('company.clientInfo')}</h2>
+                </div>
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">{t('company.searchClient')}</label>
+                  <CompanySearch
+                    onSelect={handleClientSelect}
+                    placeholder={t('company.searchPlaceholder')}
+                  />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500 mb-2 block">Client Name</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">{t('newInvoice.clientName')}</label>
                     <input
                       type="text"
-                      placeholder="Enter client name"
+                      placeholder={t('newInvoice.clientNamePlaceholder')}
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
                       required
@@ -139,10 +161,10 @@ export default function NewInvoice() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500 mb-2 block">Client Email</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">{t('newInvoice.clientEmail')}</label>
                     <input
                       type="email"
-                      placeholder="Enter client email"
+                      placeholder={t('newInvoice.clientEmailPlaceholder')}
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
                       required
@@ -151,9 +173,9 @@ export default function NewInvoice() {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="text-sm font-medium text-gray-500 mb-2 block">Client Address</label>
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">{t('newInvoice.clientAddress')}</label>
                   <textarea
-                    placeholder="Enter client address"
+                    placeholder={t('newInvoice.clientAddressPlaceholder')}
                     value={clientAddress}
                     onChange={(e) => setClientAddress(e.target.value)}
                     required
@@ -161,15 +183,26 @@ export default function NewInvoice() {
                     className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all resize-none"
                   />
                 </div>
+                <div className="mt-4">
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">{t('company.ico')}</label>
+                  <input
+                    type="text"
+                    placeholder={t('company.icoPlaceholder')}
+                    value={clientIco}
+                    onChange={(e) => setClientIco(e.target.value)}
+                    maxLength={8}
+                    className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                  />
+                </div>
               </div>
 
-              {/* Invoice Dates */}
+              {/* Invoice Dates & Currency */}
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <CalendarIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-lg font-semibold text-black">Invoice Dates</h2>
+                  <h2 className="text-lg font-semibold text-black">{t('newInvoice.invoiceDetails')}</h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500 mb-2 block">Issue Date</label>
                     <input
@@ -190,6 +223,20 @@ export default function NewInvoice() {
                       className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
                     />
                   </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">Currency</label>
+                    <select
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value as any)}
+                      className="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-2.5 text-black focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                    >
+                      {currencies.map((curr) => (
+                        <option key={curr.code} value={curr.code}>
+                          {curr.code} - {curr.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -198,7 +245,7 @@ export default function NewInvoice() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
                     <DocumentTextIcon className="w-5 h-5 text-purple-400" />
-                    <h2 className="text-lg font-semibold text-black">Invoice Items</h2>
+                    <h2 className="text-lg font-semibold text-black">{t('newInvoice.invoiceItems')}</h2>
                   </div>
                   <button
                     type="button"
@@ -216,7 +263,7 @@ export default function NewInvoice() {
                       <div className="flex-1">
                         <input
                           type="text"
-                          placeholder="Description"
+                          placeholder={t('newInvoice.itemDescriptionPlaceholder')}
                           value={item.description}
                           onChange={(e) => handleItemChange(index, 'description', e.target.value)}
                           required
@@ -226,7 +273,7 @@ export default function NewInvoice() {
                       <div className="w-16 sm:w-20">
                         <input
                           type="number"
-                          placeholder="Qty"
+                          placeholder={t('invoice.qty')}
                           value={item.quantity}
                           onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
                           min="1"
@@ -234,10 +281,19 @@ export default function NewInvoice() {
                           className="w-full bg-white/5 border border-gray-600 rounded-lg px-3 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm text-center"
                         />
                       </div>
+                      <div className="w-16 sm:w-20">
+                        <input
+                          type="text"
+                          placeholder={t('newInvoice.itemUnitPlaceholder')}
+                          value={item.unit}
+                          onChange={(e) => handleItemChange(index, 'unit', e.target.value)}
+                          className="w-full bg-white/5 border border-gray-600 rounded-lg px-3 py-2.5 text-black placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-sm text-center"
+                        />
+                      </div>
                       <div className="w-24 sm:w-32">
                         <input
                           type="number"
-                          placeholder="Price"
+                          placeholder={t('invoice.price')}
                           value={item.price}
                           onChange={(e) => handleItemChange(index, 'price', e.target.value)}
                           min="0"
@@ -265,7 +321,7 @@ export default function NewInvoice() {
                   <div>
                     <p className="text-gray-400 text-sm">Total Amount</p>
                     <p className="text-2xl sm:text-3xl font-bold text-purple-400">
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(calculateTotal())}
+                      {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(calculateTotal())}
                     </p>
                   </div>
                   <button
@@ -296,5 +352,27 @@ export default function NewInvoice() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewInvoice() {
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return (
+    <ClientOnly>
+      <NewInvoiceContent session={session} />
+    </ClientOnly>
   );
 }

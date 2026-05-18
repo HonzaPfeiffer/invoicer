@@ -13,10 +13,13 @@ export default async function Dashboard() {
 
   const invoices = await getInvoices();
   
-  // Calculate statistics
-  const totalRevenue = invoices
-    .filter(inv => inv.status === 'PAID')
-    .reduce((sum, inv) => sum + inv.totalAmount, 0);
+  // Calculate statistics by currency
+  const paidInvoices = invoices.filter(inv => inv.status === 'PAID');
+  const revenueByCurrency = paidInvoices.reduce((acc, inv) => {
+    const curr = inv.currency || 'USD';
+    acc[curr] = (acc[curr] || 0) + inv.totalAmount;
+    return acc;
+  }, {} as Record<string, number>);
     
   const pendingInvoices = invoices.filter(inv => inv.status === 'SENT').length;
   const totalInvoices = invoices.length;
@@ -24,24 +27,20 @@ export default async function Dashboard() {
 
   const stats = [
     {
-      name: 'Total Revenue',
-      value: new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: 'USD',
-        minimumFractionDigits: 0
-      }).format(totalRevenue),
-    },
-    {
       name: 'Total Invoices',
       value: totalInvoices.toString(),
+    },
+    {
+      name: 'Paid Invoices',
+      value: paidInvoices.length.toString(),
     },
     {
       name: 'Pending',
       value: pendingInvoices.toString(),
     },
     {
-      name: 'Paid Invoices',
-      value: invoices.filter(inv => inv.status === 'PAID').length.toString(),
+      name: 'Draft',
+      value: invoices.filter(inv => inv.status === 'DRAFT').length.toString(),
     }
   ];
 
@@ -69,6 +68,26 @@ export default async function Dashboard() {
             ))}
           </div>
 
+          {/* Revenue by Currency */}
+          {Object.keys(revenueByCurrency).length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Total Revenue by Currency</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {Object.entries(revenueByCurrency).map(([currency, amount]) => (
+                  <div key={currency} className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">{currency}</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      {new Intl.NumberFormat('en-US', { 
+                        style: 'currency', 
+                        currency: currency as 'USD' | 'EUR' | 'CZK'
+                      }).format(amount)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Invoices</h2>
             
@@ -84,7 +103,7 @@ export default async function Dashboard() {
                       <p className="font-medium text-gray-900">
                         {new Intl.NumberFormat('en-US', { 
                           style: 'currency', 
-                          currency: 'USD' 
+                          currency: invoice.currency || 'USD' 
                         }).format(invoice.totalAmount)}
                       </p>
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
