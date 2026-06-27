@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-postgres
+  labels:
+    {{- include "invoicer.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "invoicer.postgresSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "invoicer.postgresSelectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: postgres
+        image: {{ .Values.postgres.image }}
+        ports:
+        - containerPort: {{ .Values.postgres.port }}
+        env:
+        - name: POSTGRES_USER
+          value: {{ .Values.postgres.user | quote }}
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.postgres.password | quote }}
+        - name: POSTGRES_DB
+          value: {{ .Values.postgres.database | quote }}
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          {{- toYaml .Values.postgres.resources | nindent 10 }}
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgres
+  labels:
+    {{- include "invoicer.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "invoicer.postgresSelectorLabels" . | nindent 4 }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.postgres.port }}
+      targetPort: {{ .Values.postgres.port }}
+  type: ClusterIP

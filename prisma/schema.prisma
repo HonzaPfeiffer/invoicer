@@ -11,28 +11,36 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  invoices  Invoice[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  name           String?
+  companyName    String?
+  companyAddress String?
+  companyIco     String?
+  invoices       Invoice[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Invoice {
-  id            String   @id @default(cuid())
-  invoiceNumber String
-  clientName    String
-  clientAddress String
-  clientEmail   String
-  issueDate     DateTime
-  dueDate       DateTime
-  items         Json
-  totalAmount   Float
-  status        String   @default("DRAFT") // e.g., DRAFT, SENT, PAID
-  owner         User     @relation(fields: [ownerId], references: [id])
-  ownerId       String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String   @id @default(cuid())
+  invoiceNumber     String
+  senderName        String?
+  senderAddress     String?
+  senderIco         String?
+  clientName        String
+  clientAddress     String
+  clientEmail       String
+  clientIco         String?
+  issueDate         DateTime
+  dueDate           DateTime
+  items             Json
+  totalAmount       Float
+  currency          String   @default("USD") // USD, EUR, CZK
+  status            String   @default("DRAFT") // e.g., DRAFT, SENT, PAID
+  owner             User     @relation(fields: [ownerId], references: [id])
+  ownerId           String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
