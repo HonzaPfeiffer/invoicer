@@ -3,3 +3,13 @@ node_modules
 .next
 
 /generated/prisma
+
+# Test results
+test-results/
+playwright-report/
+playwright/.cache/
+.playwright/
+
+# Cucumber reports
+cucumber-report.html
+cucumber-report.json

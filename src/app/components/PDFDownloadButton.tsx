@@ -28,7 +28,7 @@ const PDFDownloadButton = ({ invoice }: PDFDownloadButtonProps) => {
 
   return (
     <PDFDownloadLink
-      document={<InvoicePDF invoice={invoice} currency={invoice.currency || 'USD'} language={language} />}
+      document={<InvoicePDF invoice={invoice} currency={(invoice.currency || 'USD') as 'USD' | 'EUR' | 'CZK'} language={language} />}
       fileName={`invoice-${invoice.invoiceNumber}.pdf`}
     >
       {({ loading }) => (

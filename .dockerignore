@@ -1,0 +1,9 @@
+node_modules
+.next
+tests
+docs
+.github
+*.md
+.env*
+!.env.example
+helm

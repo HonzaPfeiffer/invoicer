@@ -1,0 +1,28 @@
+# language: cs
+Vlastnost: [Název funkcionality]
+  Jako [typ uživatele]
+  Chci [provést akci]
+  Abych [dosáhl cíle]
+
+  Pozadí:
+    Pokud [společný setup pro všechny scénáře]
+
+  Scénář: [Název scénáře]
+    Pokud [předpoklad/akce]
+    A [další akce]
+    Pak [očekávaný výsledek]
+    A [další očekávaný výsledek]
+
+  Scénář: [Další scénář]
+    Pokud [předpoklad]
+    Když [akce]
+    Pak [výsledek]
+
+  Osnova scénáře: [Scénář s parametry]
+    Pokud vyplním pole "<pole>" hodnotou "<hodnota>"
+    Pak by měl vidět "<výsledek>"
+
+    Příklady:
+      | pole   | hodnota | výsledek |
+      | email  | test@   | Chyba    |
+      | jméno  | Jan     | Úspěch   |
