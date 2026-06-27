@@ -1,0 +1,48 @@
+app:
+  image:
+    repository: invoicer
+    tag: latest
+    pullPolicy: Never
+  replicas: 2
+  port: 3000
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  host: invoicer.local
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+config:
+  nextauthUrl: "http://localhost:3000"
+
+secret:
+  nextauthSecret: "NVh0UEt4c200RWZxdGF4VGhSS2U1dElIc200SDZ2TlJ4d1E3MUdBeVhnYz0="
+
+postgres:
+  image: postgres:15
+  port: 5432
+  user: appuser
+  password: apppassword
+  database: appdb
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  storage: 1Gi
